@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Enhanced Tic Tac Toe</title>
+</head>
+<body>
+    <div id="container">
+        <div id="game-section">
+            <h1>Tic Tac Toe</h1>
+            <div id="board" class="board"></div>
+            <p id="status"></p>
+        </div>
+
+        <div id="scoreboard">
+            <h2>Scoreboard</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th id="player-name">Player</th>
+                        <th>AI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="player-score">0</td>
+                        <td id="ai-score">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="start-modal" class="modal">
+            <h2>Welcome to Tic Tac Toe!</h2>
+            <input type="text" id="player-input" placeholder="Enter your name" />
+            <button id="start-btn">Start Game</button>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
