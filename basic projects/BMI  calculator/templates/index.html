@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator</title>
+<link rel="stylesheet" href="static/style.css">
+
+   </head>
+<body>
+    <div class="container">
+        <h1>BMI Calculator</h1>
+        <form method="POST">
+            <label for="weight">Weight:</label>
+            <input type="number" name="weight" id="weight" required>
+            <select name="weight_unit" id="weight_unit">
+                <option value="kilograms">Kilograms</option>
+                <option value="pounds">Pounds</option>
+            </select>
+
+            <label for="height">Height:</label>
+            <input type="number" name="height_ft" id="height_ft" placeholder="Feet" required>
+            <input type="number" name="height_inch" id="height_inch" placeholder="Inches" required>
+            <select name="height_unit" id="height_unit">
+                <option value="feet_inches">Feet & Inches</option>
+                <option value="meters">Meters</option>
+            </select>
+
+            <button type="submit">Calculate BMI</button>
+        </form>
+
+        {% if bmi_result is not none %}
+            <div id="result">
+                <p>Your BMI is: {{ bmi_result }}</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
