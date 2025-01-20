@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #626285;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: rgb(233, 226, 226);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(109, 90, 90, 0.2);
+        }
+
+        #sample-text {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+            margin: 20px 0;
+            line-height: 1.8; 
+            text-align: justify; 
+            border: 2px solid #ccc; 
+            padding: 15px; 
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            max-width: 800px; 
+            margin-left: auto;
+            margin-right: auto; 
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            font-size: 30px;
+            padding: 10px;
+            border: 1px solid #140707de;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #start-test {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #reset {
+            background-color: #f44336;
+            color: white;
+        }
+
+        p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Typing Speed Tester</h1>
+        <p id="sample-text">{{ text }}</p>
+        <textarea id="typing-area" placeholder="Start typing here..." disabled></textarea>
+        <button id="start-test">Start Test</button>
+        <button id="reset">Reset</button>
+        <p id="wpm">Words Per Minute (WPM): --</p>
+        <p id="accuracy">Accuracy: --%</p>
+        <p id="time">Time: -- seconds</p>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
