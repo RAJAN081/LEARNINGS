@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            background: black;
+            color: #0f0;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            margin-top: 80px;
+        }
+        input, button {
+            padding: 12px;
+            margin: 8px;
+            font-size: 1.2em;
+            background: black;
+            color: #0f0;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+        }
+        input[type="checkbox"] {
+            transform: scale(1.5);
+            margin: 10px;
+        }
+        #length {
+            width: 30%;
+        }
+        #password {
+            display: block;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .strength {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+        .light-options {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+        }
+        .light-options button {
+            margin-bottom: 5px;
+            padding: 8px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="light-options">
+        <button onclick="changeTheme('black', '#0f0')">Hacker Green</button>
+        <button onclick="changeTheme('white', 'black')">Classic Light</button>
+        <button onclick="changeTheme('#333', '#ff0')">Cyber Yellow</button>
+        <button onclick="changeTheme('#222', '#0ff')">Neon Blue</button>
+    </div>
+    
+    <div class="container">
+        <h2>Password Generator</h2>
+        <input type="number" id="length" min="8" max="32" placeholder="Enter password length">
+        <br>
+        <label><input type="checkbox" id="excludeSpecial"> Exclude Special Characters</label>
+        <br>
+        <button onclick="generatePassword()">Generate Password</button>
+        <p id="password"></p>
+        <button onclick="copyToClipboard()">Copy to Clipboard</button>
+        <p class="strength" id="strength"></p>
+    </div>
+    
+    <script>
+        function generatePassword() {
+            let length = document.getElementById("length").value;
+            let excludeSpecial = document.getElementById("excludeSpecial").checked;
+            if (length < 8) {
+                alert("Password should be at least 8 characters!");
+                return;
+            }
+
+            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            if (!excludeSpecial) chars += "!@#$%^&*()";
+            
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById("password").innerText = password;
+            checkStrength(password);
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(document.getElementById("password").innerText);
+            alert("Password copied to clipboard!");
+        }
+
+        function checkStrength(password) {
+            let strengthText = "Weak";
+            if (password.length >= 12 && /[!@#$%^&*()]/.test(password)) strengthText = "Strong";
+            else if (password.length >= 10) strengthText = "Medium";
+            document.getElementById("strength").innerText = "Strength: " + strengthText;
+        }
+
+        function changeTheme(bgColor, textColor) {
+            document.body.style.background = bgColor;
+            document.body.style.color = textColor;
+        }
+    </script>
+</body>
+</html>
