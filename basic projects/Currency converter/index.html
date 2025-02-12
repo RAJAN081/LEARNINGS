@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        input, select, button {
+            margin: 10px;
+            padding: 10px;
+            width: 90%;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        select {
+            background: rgba(255, 255, 255, 0.2);
+            color: black;
+            outline: none;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .currency-option {
+            display: flex;
+            align-items: center;
+        }
+        .currency-option img {
+            width: 20px;
+            height: 15px;
+            margin-right: 10px;
+        }
+        button {
+            background: #ff7eb3;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ff5286;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: rgba(255, 255, 255, 0.2);
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Currency Converter</h2>
+        <input type="number" id="amount" placeholder="Enter amount">
+        <select id="fromCurrency">
+            <option value="USD" class="currency-option"> <img src="https://flagcdn.com/w40/us.png"> USD - United States Dollar</option>
+            <option value="INR" class="currency-option"> <img src="https://flagcdn.com/w40/in.png"> INR - Indian Rupee</option>
+            <option value="EUR" class="currency-option"> <img src="https://flagcdn.com/w40/eu.png"> EUR - Euro</option>
+            <option value="GBP" class="currency-option"> <img src="https://flagcdn.com/w40/gb.png"> GBP - British Pound</option>
+            <option value="JPY" class="currency-option"> <img src="https://flagcdn.com/w40/jp.png"> JPY - Japanese Yen</option>
+            <option value="CAD" class="currency-option"> <img src="https://flagcdn.com/w40/ca.png"> CAD - Canadian Dollar</option>
+            <option value="AUD" class="currency-option"> <img src="https://flagcdn.com/w40/au.png"> AUD - Australian Dollar</option>
+            <option value="CNY" class="currency-option"> <img src="https://flagcdn.com/w40/cn.png"> CNY - Chinese Yuan</option>
+            <option value="CHF" class="currency-option"> <img src="https://flagcdn.com/w40/ch.png"> CHF - Swiss Franc</option>
+            <option value="SGD" class="currency-option"> <img src="https://flagcdn.com/w40/sg.png"> SGD - Singapore Dollar</option>
+            <option value="BRL" class="currency-option"> <img src="https://flagcdn.com/w40/br.png"> BRL - Brazilian Real</option>
+            <option value="ZAR" class="currency-option"> <img src="https://flagcdn.com/w40/za.png"> ZAR - South African Rand</option>
+        </select>
+        <button onclick="convertCurrency()">Convert</button>
+        <h3>Converted Values:</h3>
+        <ul id="results"></ul>
+    </div>
+
+    <script>
+        function convertCurrency() {
+            const amount = document.getElementById("amount").value;
+            const fromCurrency = document.getElementById("fromCurrency").value;
+            const exchangeRates = {
+                USD: { INR: 83, EUR: 0.92, GBP: 0.78, JPY: 145.37, CAD: 1.34, AUD: 1.52, CNY: 7.12, CHF: 0.89, SGD: 1.35, BRL: 4.98, ZAR: 18.24 },
+                INR: { USD: 1/83, EUR: 0.011, GBP: 0.0094, JPY: 1.75, CAD: 0.016, AUD: 0.018, CNY: 0.086, CHF: 0.011, SGD: 0.016, BRL: 0.06, ZAR: 0.22 },
+                EUR: { USD: 1.09, INR: 88, GBP: 0.85, JPY: 158, CAD: 1.47, AUD: 1.65, CNY: 7.62, CHF: 0.97, SGD: 1.49, BRL: 5.50, ZAR: 20.15 },
+            };
+            
+            const resultList = document.getElementById("results");
+            resultList.innerHTML = ""; 
+            
+            for (let currency in exchangeRates[fromCurrency]) {
+                let convertedAmount = (amount * exchangeRates[fromCurrency][currency]).toFixed(2);
+                let listItem = document.createElement("li");
+                listItem.textContent = `${amount} ${fromCurrency} = ${convertedAmount} ${currency}`;
+                resultList.appendChild(listItem);
+            }
+        }
+    </script>
+</body>
+</html>
