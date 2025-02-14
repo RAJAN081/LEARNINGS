@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Detection</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Face Detection System</h1>
+    <h2 id="status">🔴 No Face Detected</h2>
+    <div class="video-container">
+      <img id="videoFeed" src="{{ url_for('video_feed') }}">
+    </div>
+    <div class="controls">
+      <button id="toggleDetection">Toggle Detection</button>
+      <button id="capture">📸 Capture</button>
+    </div>
+    <!-- Audio element for sound alert -->
+    <audio id="alertSound" src="{{ url_for('static', filename='bomb-countdown-beeps-6868.mp3') }}"></audio>
+  </div>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
