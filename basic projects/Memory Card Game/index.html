@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Card Matching Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode h1 {
+            color: #f8f9fa;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #6e8efb;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 25px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .stats {
+            background: rgba(44, 62, 80, 0.85);
+        }
+
+        .stat {
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #6e8efb;
+        }
+
+        body.dark-mode .stat-value {
+            color: #a777e3;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 700px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        /* Difficulty-based grid adjustments */
+        .game-board.easy {
+            grid-template-columns: repeat(4, 1fr);
+            max-width: 700px;
+        }
+
+        .game-board.medium {
+            grid-template-columns: repeat(5, 1fr);
+            max-width: 800px;
+        }
+
+        .game-board.hard {
+            grid-template-columns: repeat(6, 1fr);
+            max-width: 900px;
+        }
+
+        .card {
+            height: 120px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            transform: rotateY(180deg);
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .card.matched .card-front {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+        }
+
+        .victory-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.5s ease-out;
+        }
+
+        body.dark-mode .modal-content {
+            background: linear-gradient(135deg, #2c3e50, #4a69bd);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content p {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            color: #fff;
+        }
+
+        .best-score {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+
+        body.dark-mode footer {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .game-board.medium {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .game-board.hard {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .card {
+                height: 100px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .card {
+                height: 80px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Memory Card Matching Game</h1>
+        </header>
+        
+        <div class="controls">
+            <button id="restart-btn" class="btn"><i class="fas fa-redo"></i> Restart Game</button>
+            <button id="difficulty-btn" class="btn"><i class="fas fa-sliders-h"></i> Difficulty: Easy</button>
+            <button id="sound-btn" class="btn"><i class="fas fa-volume-up"></i> Sound: On</button>
+            <button id="dark-mode-btn" class="btn"><i class="fas fa-moon"></i> Dark Mode</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div>Moves</div>
+                <div id="moves" class="stat-value">0</div>
+            </div>
+            <div class="stat">
+                <div>Time</div>
+                <div id="timer" class="stat-value">0s</div>
+            </div>
+            <div class="stat">
+                <div>Best Score</div>
+                <div id="best-score" class="stat-value">-</div>
+            </div>
+        </div>
+        
+        <div id="game-board" class="game-board easy">
+            <!-- Cards will be generated here -->
+        </div>
+        
+        <div id="victory-modal" class="victory-modal">
+            <div class="modal-content">
+                <h2>Congratulations! 🎉</h2>
+                <p>You've matched all the pairs!</p>
+                <p>Moves: <span id="final-moves"></span></p>
+                <p>Time: <span id="final-time"></span></p>
+                <div class="best-score">
+                    <p>Best Score: <span id="best-score-display"></span></p>
+                </div>
+                <button id="play-again-btn" class="btn"><i class="fas fa-play"></i> Play Again</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Test your memory skills! Match pairs of cards in the fewest moves and shortest time.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Game variables
+            let cards = [];
+            let hasFlippedCard = false;
+            let lockBoard = false;
+            let firstCard, secondCard;
+            let moves = 0;
+            let matchedPairs = 0;
+            let gameStarted = false;
+            let startTime;
+            let timerInterval;
+            let soundEnabled = true;
+            let darkMode = false;
+            let difficulty = 'easy'; // easy, medium, hard
+            let cardIcons = ['🍎', '🍌', '🍇', '🍊', '🍓', '🍉', '🍒', '🥝', '🍑', '🍍', '🥥', '🥭'];
+            
+            // DOM elements
+            const gameBoard = document.getElementById('game-board');
+            const movesDisplay = document.getElementById('moves');
+            const timerDisplay = document.getElementById('timer');
+            const restartBtn = document.getElementById('restart-btn');
+            const soundBtn = document.getElementById('sound-btn');
+            const darkModeBtn = document.getElementById('dark-mode-btn');
+            const difficultyBtn = document.getElementById('difficulty-btn');
+            const victoryModal = document.getElementById('victory-modal');
+            const finalMoves = document.getElementById('final-moves');
+            const finalTime = document.getElementById('final-time');
+            const playAgainBtn = document.getElementById('play-again-btn');
+            const bestScoreDisplay = document.getElementById('best-score');
+            const bestScoreModal = document.getElementById('best-score-display');
+            
+            // Initialize game
+            initGame();
+            
+            // Set up event listeners
+            restartBtn.addEventListener('click', initGame);
+            soundBtn.addEventListener('click', toggleSound);
+            darkModeBtn.addEventListener('click', toggleDarkMode);
+            difficultyBtn.addEventListener('click', changeDifficulty);
+            playAgainBtn.addEventListener('click', initGame);
+            
+            // Initialize game function
+            function initGame() {
+                clearInterval(timerInterval);
+                moves = 0;
+                matchedPairs = 0;
+                gameStarted = false;
+                movesDisplay.textContent = moves;
+                timerDisplay.textContent = '0s';
+                updateBestScoreDisplay();
+                
+                // Hide victory modal
+                victoryModal.style.display = 'none';
+                
+                // Determine number of pairs based on difficulty
+                let numPairs;
+                switch(difficulty) {
+                    case 'easy':
+                        numPairs = 8;
+                        break;
+                    case 'medium':
+                        numPairs = 10;
+                        break;
+                    case 'hard':
+                        numPairs = 12;
+                        break;
+                    default:
+                        numPairs = 8;
+                }
+                
+                // Create cards array with pairs
+                cards = [];
+                for (let i = 0; i < numPairs; i++) {
+                    cards.push(cardIcons[i]);
+                    cards.push(cardIcons[i]);
+                }
+                
+                // Shuffle cards
+                shuffleCards();
+                
+                // Generate HTML for cards
+                gameBoard.innerHTML = '';
+                gameBoard.className = `game-board ${difficulty}`;
+                
+                cards.forEach((icon, index) => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.dataset.icon = icon;
+                    card.innerHTML = `
+                        <div class="card-inner">
+                            <div class="card-front">${icon}</div>
+                            <div class="card-back"><i class="fas fa-question"></i></div>
+                        </div>
+                    `;
+                    card.addEventListener('click', flipCard);
+                    gameBoard.appendChild(card);
+                });
+            }
+            
+            // Flip card function
+            function flipCard() {
+                if (lockBoard) return;
+                if (this === firstCard) return;
+                if (this.classList.contains('matched')) return;
+                
+                // Start timer on first card flip
+                if (!gameStarted) {
+                    startGame();
+                }
+                
+                this.classList.add('flipped');
+                
+                if (!hasFlippedCard) {
+                    // First flip
+                    hasFlippedCard = true;
+                    firstCard = this;
+                    playSound('flip');
+                    return;
+                }
+                
+                // Second flip
+                secondCard = this;
+                playSound('flip');
+                checkForMatch();
+            }
+            
+            // Check for match function
+            function checkForMatch() {
+                moves++;
+                movesDisplay.textContent = moves;
+                
+                const isMatch = firstCard.dataset.icon === secondCard.dataset.icon;
+                
+                if (isMatch) {
+                    disableCards();
+                    playSound('match');
+                    matchedPairs++;
+                    
+                    // Check for victory
+                    if (matchedPairs === cards.length / 2) {
+                        victory();
+                    }
+                } else {
+                    unflipCards();
+                    playSound('mismatch');
+                }
+            }
+            
+            // Disable matched cards
+            function disableCards() {
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                firstCard.removeEventListener('click', flipCard);
+                secondCard.removeEventListener('click', flipCard);
+                resetBoard();
+            }
+            
+            // Unflip cards
+            function unflipCards() {
+                lockBoard = true;
+                
+                setTimeout(() => {
+                    firstCard.classList.remove('flipped');
+                    secondCard.classList.remove('flipped');
+                    resetBoard();
+                }, 1000);
+            }
+            
+            // Reset board after each turn
+            function resetBoard() {
+                [hasFlippedCard, lockBoard] = [false, false];
+                [firstCard, secondCard] = [null, null];
+            }
+            
+            // Shuffle cards using Fisher-Yates algorithm
+            function shuffleCards() {
+                for (let i = cards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [cards[i], cards[j]] = [cards[j], cards[i]];
+                }
+            }
+            
+            // Start game timer
+            function startGame() {
+                gameStarted = true;
+                startTime = new Date();
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            // Update timer display
+            function updateTimer() {
+                const currentTime = new Date();
+                const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+                timerDisplay.textContent = `${elapsedTime}s`;
+            }
+            
+            // Victory function
+            function victory() {
+                clearInterval(timerInterval);
+                const elapsedTime = Math.floor((new Date() - startTime) / 1000);
+                
+                // Update final stats
+                finalMoves.textContent = moves;
+                finalTime.textContent = `${elapsedTime}s`;
+                
+                // Calculate score (lower is better)
+                const score = moves + elapsedTime;
+                
+                // Check and update best score
+                const bestScore = localStorage.getItem('bestScore');
+                if (!bestScore || score < bestScore) {
+                    localStorage.setItem('bestScore', score);
+                    updateBestScoreDisplay();
+                }
+                
+                // Show victory modal
+                victoryModal.style.display = 'flex';
+                playSound('win');
+            }
+            
+            // Toggle sound
+            function toggleSound() {
+                soundEnabled = !soundEnabled;
+                soundBtn.innerHTML = soundEnabled ? 
+                    '<i class="fas fa-volume-up"></i> Sound: On' : 
+                    '<i class="fas fa-volume-mute"></i> Sound: Off';
+            }
+            
+            // Toggle dark mode
+            function toggleDarkMode() {
+                darkMode = !darkMode;
+                document.body.classList.toggle('dark-mode', darkMode);
+                darkBtn.innerHTML = darkMode ? 
+                    '<i class="fas fa-sun"></i> Light Mode' : 
+                    '<i class="fas fa-moon"></i> Dark Mode';
+            }
+            
+            // Change difficulty
+            function changeDifficulty() {
+                switch(difficulty) {
+                    case 'easy':
+                        difficulty = 'medium';
+                        difficultyBtn.innerHTML = '<i class="fas fa-sliders-h"></i> Difficulty: Medium';
+                        break;
+                    case 'medium':
+                        difficulty = 'hard';
+                        difficultyBtn.innerHTML = '<i class="fas fa-sliders-h"></i> Difficulty: Hard';
+                        break;
+                    case 'hard':
+                        difficulty = 'easy';
+                        difficultyBtn.innerHTML = '<i class="fas fa-sliders-h"></i> Difficulty: Easy';
+                        break;
+                }
+                initGame();
+            }
+            
+            // Play sound effects
+            function playSound(type) {
+                if (!soundEnabled) return;
+                
+                // In a real implementation, you would play actual audio files here
+                // This is a placeholder for the sound functionality
+                console.log(`Playing sound: ${type}`);
+            }
+            
+            // Update best score display
+            function updateBestScoreDisplay() {
+                const bestScore = localStorage.getItem('bestScore');
+                if (bestScore) {
+                    bestScoreDisplay.textContent = bestScore;
+                    bestScoreModal.textContent = bestScore;
+                } else {
+                    bestScoreDisplay.textContent = '-';
+                    bestScoreModal.textContent = '-';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
